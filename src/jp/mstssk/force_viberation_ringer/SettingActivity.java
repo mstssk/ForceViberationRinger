@@ -1,8 +1,6 @@
 package jp.mstssk.force_viberation_ringer;
 
 import android.app.Activity;
-import android.content.ComponentName;
-import android.content.pm.PackageManager;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
@@ -25,25 +23,13 @@ public class SettingActivity extends Activity {
 
 	@AfterViews
 	void setup() {
-		forceViberation.setChecked(isVolumeChangedReceiverEnabled());
-		forceViberation.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+		final PackageController packageController = new PackageController(this);
+		this.forceViberation.setChecked(packageController.isReceiverStateEnabled(VolumeChangedReceiver_.class));
+		this.forceViberation.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged(final CompoundButton buttonView, final boolean checked) {
-				swichVolumeChangedReceiverEnabled(checked);
+				packageController.setReceiverStateEnabled(VolumeChangedReceiver_.class, checked);
 			}
 		});
-	}
-
-	private boolean isVolumeChangedReceiverEnabled() {
-		ComponentName name = new ComponentName(this, VolumeChangedReceiver_.class);
-		int enabledSetting = getPackageManager().getComponentEnabledSetting(name);
-		return PackageManager.COMPONENT_ENABLED_STATE_ENABLED == enabledSetting;
-	}
-
-	private void swichVolumeChangedReceiverEnabled(final boolean enabled) {
-		int enabledFlag = enabled ? PackageManager.COMPONENT_ENABLED_STATE_ENABLED
-				: PackageManager.COMPONENT_ENABLED_STATE_DISABLED;
-		ComponentName name = new ComponentName(this, VolumeChangedReceiver_.class);
-		getPackageManager().setComponentEnabledSetting(name, enabledFlag, PackageManager.DONT_KILL_APP);
 	}
 }

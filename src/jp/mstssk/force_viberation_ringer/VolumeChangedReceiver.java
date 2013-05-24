@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
 
+import com.googlecode.androidannotations.annotations.AfterInject;
 import com.googlecode.androidannotations.annotations.EReceiver;
 import com.googlecode.androidannotations.annotations.SystemService;
 
@@ -19,18 +20,15 @@ public class VolumeChangedReceiver extends BroadcastReceiver {
 
 	@SystemService
 	AudioManager audioManager;
+	private AudioController audioController;
 
-	@Override
-	public void onReceive(Context context, Intent intent) {
-		forceViberation();
+	@AfterInject
+	void setup() {
+		this.audioController = new AudioController(this.audioManager);
 	}
 
-	/**
-	 * Set to VIVERATE ringer mode forces, if SILENT.
-	 */
-	private void forceViberation() {
-		if (audioManager.getRingerMode() == AudioManager.RINGER_MODE_SILENT) {
-			audioManager.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
-		}
+	@Override
+	public void onReceive(final Context context, final Intent intent) {
+		this.audioController.forceViberation();
 	}
 }
